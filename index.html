@@ -3,511 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APava_Finanças Inteligentes</title>
+    <title>APavan_Finanças Pro - Gestão Local</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        [v-cloak] { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+        .view-content { display: none; }
+        .view-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+<body class="bg-[#f8fafc] text-slate-900">
 
-    <!-- Loading Overlay -->
-    <div id="loading" class="fixed inset-0 bg-white z-[100] flex items-center justify-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <div id="loading-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center transition-opacity duration-500 pointer-events-none opacity-0">
+        <div class="flex flex-col items-center gap-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-slate-100 border-t-blue-600"></div>
+            <p class="text-sm font-medium text-slate-500">A carregar...</p>
+        </div>
     </div>
 
-    <!-- Layout Container -->
-    <div class="flex min-h-screen">
-
-        <!-- Sidebar (Desktop) -->
-        <aside class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-slate-200 p-6 z-10">
-            <div class="flex items-center gap-3 mb-10 text-blue-600">
-                <i class="fas fa-wallet text-2xl"></i>
-                <h1 class="font-bold text-xl tracking-tight text-slate-900">APavan_Finanças</h1>
-            </div>
-            
-            <nav class="space-y-2">
-                <button onclick="changeView('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-slate-50" data-view="dashboard">
-                    <i class="fas fa-chart-pie w-5"></i> Dashboard
-                </button>
-                <button onclick="changeView('list')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-slate-50" data-view="list">
-                    <i class="fas fa-calendar-alt w-5"></i> Extrato Mensal
-                </button>
-                <button onclick="changeView('calculator')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-slate-50" data-view="calculator">
-                    <i class="fas fa-calculator w-5"></i> Calculadora de Juros
-                </button>
-                <button onclick="openForm()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-slate-50" data-view="form">
-                    <i class="fas fa-plus-circle w-5"></i> Novo Lançamento
-                </button>
-            </nav>
-
-            <div class="mt-auto">
-                <div class="p-4 bg-slate-100 rounded-2xl">
-                    <p class="text-[10px] text-slate-500 mb-1 uppercase font-bold">Usuário Ativo</p>
-                    <p id="user-uid" class="text-[10px] font-mono truncate text-slate-600">Conectando...</p>
+    <div class="flex min-h-screen relative">
+        <!-- Sidebar -->
+        <aside class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-72 bg-white border-r border-slate-200 p-8 z-50">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                    <i class="fas fa-vault text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none">APavan_FinançasPro</h1>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Modo Local</span>
                 </div>
             </div>
+            
+            <nav class="space-y-1">
+                <button onclick="changeView('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all text-slate-500 hover:bg-slate-50 font-medium" data-view="dashboard">
+                    <i class="fas fa-chart-pie w-5"></i> Dashboard
+                </button>
+                <button onclick="changeView('list')" class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all text-slate-500 hover:bg-slate-50 font-medium" data-view="list">
+                    <i class="fas fa-receipt w-5"></i> Extrato Mensal
+                </button>
+                <button onclick="changeView('calculator')" class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all text-slate-500 hover:bg-slate-50 font-medium" data-view="calculator">
+                    <i class="fas fa-calculator w-5"></i> Calculadora
+                </button>
+                <div class="pt-4 pb-2">
+                    <button onclick="openForm()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-blue-600 text-white shadow-md hover:bg-blue-700 transition-all font-semibold">
+                        <i class="fas fa-plus-circle"></i> Novo Lançamento
+                    </button>
+                </div>
+            </nav>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 md:ml-64 p-4 md:p-8 max-w-5xl mx-auto w-full pb-24 md:pb-8">
-            
-            <!-- Header -->
-            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <main class="flex-1 lg:ml-72 p-4 md:p-8 lg:p-12 pb-28">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                 <div>
-                    <h2 id="view-title" class="text-2xl font-bold">Dashboard</h2>
-                    <p id="view-subtitle" class="text-slate-500 text-sm">Controle de entradas e saídas</p>
+                    <h2 id="view-title" class="text-3xl font-extrabold tracking-tight">Dashboard</h2>
+                    <p id="view-subtitle" class="text-slate-500 font-medium">Controlo financeiro offline.</p>
                 </div>
-                
-                <div id="period-selector" class="flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
-                    <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-50 rounded-lg text-slate-400">
-                        <i class="fas fa-chevron-left"></i>
+
+                <div id="calendar-controls" class="flex items-center bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-xl text-slate-400 transition-colors">
+                        <i class="fas fa-chevron-left text-sm"></i>
                     </button>
-                    <span id="current-period" class="px-4 font-semibold min-w-[140px] text-center text-sm">
-                        ...
-                    </span>
-                    <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-50 rounded-lg text-slate-400">
-                        <i class="fas fa-chevron-right"></i>
+                    <div class="px-6 text-center min-w-[160px]">
+                        <span id="label-month" class="block font-bold text-sm text-slate-900">...</span>
+                        <span id="label-year" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">2024</span>
+                    </div>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-xl text-slate-400 transition-colors">
+                        <i class="fas fa-chevron-right text-sm"></i>
                     </button>
                 </div>
-            </header>
+            </div>
 
-            <!-- Dashboard View -->
-            <section id="view-dashboard" class="view-content space-y-6 fade-in">
-                <!-- Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-emerald-600">
-                        <div class="flex items-center justify-between mb-4 text-slate-400">
-                            <div class="bg-emerald-100 p-2 rounded-lg text-emerald-600 text-sm"><i class="fas fa-arrow-up"></i></div>
-                            <span class="text-[10px] font-bold uppercase">Receitas</span>
-                        </div>
-                        <h3 id="stat-receitas" class="text-2xl font-bold">R$ 0,00</h3>
-                        <p class="text-xs text-slate-500 mt-1">Total recebido</p>
+            <!-- VIEW: DASHBOARD -->
+            <section id="view-dashboard" class="view-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Entradas</span>
+                        <h3 id="dash-receitas" class="text-2xl font-bold text-emerald-600 tracking-tight">R$ 0,00</h3>
                     </div>
-
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-rose-600">
-                        <div class="flex items-center justify-between mb-4 text-slate-400">
-                            <div class="bg-rose-100 p-2 rounded-lg text-rose-600 text-sm"><i class="fas fa-arrow-down"></i></div>
-                            <span class="text-[10px] font-bold uppercase">Despesas</span>
-                        </div>
-                        <h3 id="stat-despesas" class="text-2xl font-bold">R$ 0,00</h3>
-                        <p id="stat-count" class="text-xs text-slate-500 mt-1">Total de saídas</p>
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Saídas</span>
+                        <h3 id="dash-despesas" class="text-2xl font-bold text-rose-600 tracking-tight">R$ 0,00</h3>
                     </div>
-
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-amber-600">
-                        <div class="flex items-center justify-between mb-4 text-slate-400">
-                            <div class="bg-amber-100 p-2 rounded-lg text-amber-600 text-sm"><i class="fas fa-clock"></i></div>
-                            <span class="text-[10px] font-bold uppercase">A Pagar</span>
-                        </div>
-                        <h3 id="stat-pendente" class="text-2xl font-bold">R$ 0,00</h3>
-                        <p class="text-xs text-slate-500 mt-1">Despesas em aberto</p>
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">A Pagar</span>
+                        <h3 id="dash-pendente" class="text-2xl font-bold text-amber-600 tracking-tight">R$ 0,00</h3>
                     </div>
-
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                        <div class="flex items-center justify-between mb-4 text-slate-400">
-                            <div class="bg-blue-100 p-2 rounded-lg text-blue-600 text-sm"><i class="fas fa-equals"></i></div>
-                            <span class="text-[10px] font-bold uppercase">Saldo Caixa</span>
-                        </div>
-                        <h3 id="stat-saldo" class="text-2xl font-bold">R$ 0,00</h3>
-                        <div class="w-full bg-slate-100 h-2 rounded-full mt-3 overflow-hidden">
-                            <div id="stat-progress-bar" class="bg-blue-500 h-2 transition-all duration-700" style="width: 0%"></div>
-                        </div>
+                    <div class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl shadow-slate-200">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Saldo Geral</span>
+                        <h3 id="dash-saldo" class="text-2xl font-bold">R$ 0,00</h3>
                     </div>
                 </div>
 
-                <!-- Gráfico e Próximos -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                        <h4 class="font-bold flex items-center gap-2 mb-6 text-sm"><i class="fas fa-chart-bar text-blue-500"></i> Resumo de Gastos</h4>
-                        <div id="category-stats" class="space-y-4"></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+                        <h4 class="font-bold flex items-center gap-2 mb-8 text-slate-800"><i class="fas fa-chart-line text-blue-500"></i> Gastos por Categoria</h4>
+                        <div id="cat-distribution" class="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6"></div>
                     </div>
-
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                        <h4 class="font-bold flex items-center gap-2 mb-4 text-sm"><i class="fas fa-exclamation-circle text-amber-500"></i> Contas Próximas do Vencimento</h4>
-                        <div id="upcoming-list" class="space-y-3 text-sm"></div>
+                    <div class="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+                        <h4 class="font-bold flex items-center gap-2 mb-6 text-slate-800"><i class="fas fa-clock text-amber-500"></i> Próximos Vencimentos</h4>
+                        <div id="upcoming-list" class="space-y-4"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- List View -->
-            <section id="view-list" class="view-content hidden fade-in">
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div class="p-4 md:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <h4 class="font-bold">Extrato Detalhado</h4>
-                        <button onclick="exportCSV()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs transition-colors font-semibold">
-                            <i class="fas fa-file-csv"></i> Exportar Dados
-                        </button>
-                    </div>
+            <!-- VIEW: LIST -->
+            <section id="view-list" class="view-content">
+                <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[600px]">
-                            <thead class="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-wider">
-                                <tr>
-                                    <th class="px-6 py-4 font-semibold">Tipo</th>
-                                    <th class="px-6 py-4 font-semibold">Descrição</th>
-                                    <th class="px-6 py-4 font-semibold">Data</th>
-                                    <th class="px-6 py-4 font-semibold">Valor</th>
-                                    <th class="px-6 py-4 font-semibold">Meio</th>
-                                    <th class="px-6 py-4 font-semibold text-right">Ações</th>
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead>
+                                <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                                    <th class="px-6 py-5">Status</th>
+                                    <th class="px-6 py-5">Nome</th>
+                                    <th class="px-6 py-5">Data</th>
+                                    <th class="px-6 py-5">Valor</th>
+                                    <th class="px-6 py-5 text-right">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="contas-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            <tbody id="table-body" class="text-sm font-medium text-slate-700"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <!-- Calculator View -->
-            <section id="view-calculator" class="view-content hidden fade-in">
-                <div class="max-w-3xl mx-auto space-y-6">
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
-                        <div class="flex p-1 bg-slate-100 rounded-xl mb-8">
-                            <button type="button" onclick="setCalcRegime('composto')" id="btn-regime-composto" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all bg-white shadow-sm text-blue-600">Juros Compostos</button>
-                            <button type="button" onclick="setCalcRegime('simples')" id="btn-regime-simples" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-500">Juros Simples</button>
+            <!-- VIEW: CALCULATOR -->
+            <section id="view-calculator" class="view-content">
+                <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-8 md:p-12 max-w-4xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3">Valor Inicial</label>
+                            <input type="number" id="calc-p" value="1000" class="w-full px-4 py-4 bg-slate-50 rounded-2xl outline-none font-bold text-lg">
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="md:col-span-1">
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Capital Inicial (R$)</label>
-                                <input type="number" id="calc-capital" step="0.01" value="1000" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Taxa de Juros (%)</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="number" id="calc-taxa" step="0.01" value="1" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                                    <select id="calc-taxa-tipo" class="px-2 py-3 border border-slate-200 rounded-xl text-xs bg-white outline-none">
-                                        <option value="mes">a.m.</option>
-                                        <option value="ano">a.a.</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Período (Tempo)</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="number" id="calc-tempo" step="1" value="12" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                                    <select id="calc-tempo-tipo" class="px-2 py-3 border border-slate-200 rounded-xl text-xs bg-white outline-none">
-                                        <option value="meses">Meses</option>
-                                        <option value="anos">Anos</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3">Taxa (%)</label>
+                            <input type="number" id="calc-i" value="1" class="w-full px-4 py-4 bg-slate-50 rounded-2xl outline-none font-bold text-lg">
                         </div>
-
-                        <div class="mt-8 pt-8 border-t border-slate-100">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Total em Juros</p>
-                                    <h4 id="calc-res-juros" class="text-xl font-bold text-blue-600">R$ 0,00</h4>
-                                </div>
-                                <div class="p-4 bg-blue-600 rounded-2xl shadow-lg shadow-blue-100">
-                                    <p class="text-[10px] font-bold text-blue-200 uppercase mb-1">Montante Final</p>
-                                    <h4 id="calc-res-montante" class="text-xl font-bold text-white">R$ 0,00</h4>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3">Meses</label>
+                            <input type="number" id="calc-n" value="12" class="w-full px-4 py-4 bg-slate-50 rounded-2xl outline-none font-bold text-lg">
                         </div>
+                    </div>
+                    <div class="p-8 bg-blue-50 rounded-[2rem] text-center">
+                        <span class="block text-[10px] font-bold text-blue-400 uppercase mb-1">Montante Final</span>
+                        <h5 id="res-total" class="text-4xl font-extrabold text-blue-600">R$ 0,00</h5>
                     </div>
                 </div>
             </section>
 
-            <!-- Form View -->
-            <section id="view-form" class="view-content hidden fade-in">
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm max-w-2xl mx-auto p-6 md:p-8">
-                    <h4 id="form-title" class="text-xl font-bold mb-6">Novo Lançamento</h4>
-                    <div class="flex p-1 bg-slate-100 rounded-xl mb-8">
-                        <button type="button" onclick="setFormType('despesa')" id="btn-type-despesa" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all bg-white shadow-sm text-rose-600">Despesa</button>
-                        <button type="button" onclick="setFormType('receita')" id="btn-type-receita" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-500">Receita</button>
-                    </div>
-                    <form id="finance-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <input type="hidden" id="edit-id"><input type="hidden" id="form-tipo" value="despesa">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição / Nome</label>
-                            <input type="text" id="form-nome" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
+            <!-- VIEW: FORM -->
+            <section id="view-form" class="view-content">
+                <div class="max-w-2xl mx-auto bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-8 md:p-12">
+                    <h4 id="form-title" class="text-2xl font-bold mb-8 text-center">Novo Lançamento</h4>
+                    <form id="finance-form" class="space-y-6">
+                        <input type="hidden" id="edit-id">
+                        <div class="flex p-1 bg-slate-100 rounded-xl mb-6">
+                            <button type="button" onclick="setFormType('despesa')" id="ft-des" class="flex-1 py-2 font-bold rounded-lg bg-white shadow-sm text-rose-600">Despesa</button>
+                            <button type="button" onclick="setFormType('receita')" id="ft-rec" class="flex-1 py-2 font-bold rounded-lg text-slate-400">Receita</button>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Valor (R$)</label>
-                            <input type="number" id="form-valor" step="0.01" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="hidden" id="form-type-val" value="despesa">
+                        
+                        <input type="text" id="form-name" placeholder="Nome do lançamento" required class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="number" step="0.01" id="form-value" placeholder="Valor R$" required class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none font-bold">
+                            <input type="date" id="form-date" required class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none">
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data</label>
-                            <input type="date" id="form-vencimento" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div id="wrapper-categoria">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Categoria</label>
-                            <select id="form-categoria" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none bg-white">
-                                <option value="fixa">Fixa</option><option value="variável">Variável</option><option value="extra">Extra / Outros</option>
+                        <div class="grid grid-cols-2 gap-4">
+                            <select id="form-cat" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none">
+                                <option value="fixa">Conta Fixa</option>
+                                <option value="variável">Variável</option>
+                                <option value="lazer">Lazer</option>
+                                <option value="extra">Outros</option>
+                            </select>
+                            <select id="form-method" class="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none">
+                                <option value="PIX">PIX</option>
+                                <option value="Cartão">Cartão</option>
+                                <option value="Dinheiro">Dinheiro</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Forma</label>
-                            <select id="form-meio" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none bg-white">
-                                <option value="PIX">PIX</option><option value="Espécie">Dinheiro</option><option value="Boleto">Boleto</option><option value="Cartão">Cartão</option><option value="Débito">Débito</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Observações</label>
-                            <textarea id="form-obs" rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"></textarea>
-                        </div>
-                        <div class="md:col-span-2 flex gap-4">
-                            <button type="button" onclick="changeView('list')" class="flex-1 px-6 py-3 border border-slate-200 rounded-xl font-bold text-slate-600">Cancelar</button>
-                            <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">Salvar</button>
+                        <div class="flex gap-4 pt-6">
+                            <button type="button" onclick="changeView('dashboard')" class="flex-1 py-4 font-bold text-slate-400">Cancelar</button>
+                            <button type="submit" class="flex-1 py-4 bg-blue-600 text-white font-extrabold rounded-2xl shadow-lg">Gravar</button>
                         </div>
                     </form>
                 </div>
             </section>
         </main>
-
-        <!-- Mobile Nav -->
-        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center z-20">
-            <button onclick="changeView('dashboard')" class="flex flex-col items-center gap-1 text-slate-400">
-                <i class="fas fa-chart-pie text-lg"></i>
-                <span class="text-[10px] font-bold">Início</span>
-            </button>
-            <button onclick="changeView('list')" class="flex flex-col items-center gap-1 text-slate-400">
-                <i class="fas fa-calendar-alt text-lg"></i>
-                <span class="text-[10px] font-bold">Extrato</span>
-            </button>
-            <button onclick="openForm()" class="bg-blue-600 text-white p-4 rounded-full -mt-10 shadow-xl border-4 border-slate-50">
-                <i class="fas fa-plus text-xl"></i>
-            </button>
-            <button onclick="changeView('calculator')" class="flex flex-col items-center gap-1 text-slate-400">
-                <i class="fas fa-calculator text-lg"></i>
-                <span class="text-[10px] font-bold">Juros</span>
-            </button>
-            <button onclick="exportCSV()" class="flex flex-col items-center gap-1 text-slate-400">
-                <i class="fas fa-file-export text-lg"></i>
-                <span class="text-[10px] font-bold">CSV</span>
-            </button>
-        </nav>
     </div>
 
-    <!-- SCRIPTS -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, addDoc, updateDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-
+    <script>
+        // ESTADO LOCAL (Substitui o Firebase por LocalStorage)
         const state = {
-            user: null,
-            contas: [],
-            currentMonth: new Date().getMonth(),
-            currentYear: new Date().getFullYear(),
-            calcRegime: 'composto',
-            meses: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+            registros: JSON.parse(localStorage.getItem('financas_pro_data')) || [],
+            month: new Date().getMonth(),
+            year: new Date().getFullYear(),
+            months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
         };
 
-        const firebaseConfig = JSON.parse(window.__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'finance-standalone-v1';
+        const saveToLocal = () => {
+            localStorage.setItem('financas_pro_data', JSON.stringify(state.registros));
+            renderAll();
+        };
 
-        const formatMoney = (val) => Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const formatBRL = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        async function handleAuth() {
-            try {
-                if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
-                    await signInWithCustomToken(auth, window.__initial_auth_token);
-                } else { await signInAnonymously(auth); }
-            } catch (err) { console.error("Auth Error:", err); }
-        }
+        function renderAll() {
+            updateLabels();
+            const filtered = state.registros.filter(r => {
+                const d = new Date(r.data);
+                return d.getUTCMonth() === state.month && d.getUTCFullYear() === state.year;
+            }).sort((a, b) => new Date(a.data) - new Date(b.data));
 
-        onAuthStateChanged(auth, (u) => {
-            state.user = u;
-            if (u) {
-                document.getElementById('user-uid').innerText = u.uid;
-                initDataListener();
-            }
-        });
-
-        function initDataListener() {
-            if (!state.user) return;
-            const q = query(collection(db, `artifacts/${appId}/public/data/contas`));
-            onSnapshot(q, (snapshot) => {
-                state.contas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                render();
-                document.getElementById('loading').classList.add('hidden');
-            }, (err) => console.error("Data error:", err));
-        }
-
-        function render() {
-            updatePeriodDisplay();
-            const filtered = getFilteredContas();
             renderDashboard(filtered);
             renderList(filtered);
-            calculateJuros();
+            doCalc();
         }
 
-        function updatePeriodDisplay() {
-            document.getElementById('current-period').innerText = `${state.meses[state.currentMonth]} ${state.currentYear}`;
-        }
-
-        function getFilteredContas() {
-            return state.contas.filter(c => {
-                const date = new Date(c.vencimento);
-                const m = c.mesRef ?? date.getUTCMonth();
-                const y = c.anoRef ?? date.getUTCFullYear();
-                return m === state.currentMonth && y === state.currentYear;
-            }).sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+        function updateLabels() {
+            document.getElementById('label-month').innerText = state.months[state.month];
+            document.getElementById('label-year').innerText = state.year;
         }
 
         function renderDashboard(data) {
-            const receitas = data.filter(c => c.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
-            const despesas = data.filter(c => c.tipo !== 'receita').reduce((a, b) => a + b.valor, 0);
-            const pago = data.filter(c => c.tipo !== 'receita' && c.status === 'paga').reduce((a, b) => a + b.valor, 0);
-            const pendente = despesas - pago;
-            const saldo = receitas - despesas;
+            const ent = data.filter(r => r.tipo === 'receita').reduce((a, b) => a + b.valor, 0);
+            const sai = data.filter(r => r.tipo === 'despesa').reduce((a, b) => a + b.valor, 0);
+            const pend = data.filter(r => r.tipo === 'despesa' && !r.pago).reduce((a, b) => a + b.valor, 0);
             
-            document.getElementById('stat-receitas').innerText = formatMoney(receitas);
-            document.getElementById('stat-despesas').innerText = formatMoney(despesas);
-            document.getElementById('stat-pendente').innerText = formatMoney(pendente);
-            document.getElementById('stat-saldo').innerText = formatMoney(saldo);
-            document.getElementById('stat-saldo').className = `text-2xl font-bold ${saldo >= 0 ? 'text-slate-900' : 'text-rose-600'}`;
+            document.getElementById('dash-receitas').innerText = formatBRL(ent);
+            document.getElementById('dash-despesas').innerText = formatBRL(sai);
+            document.getElementById('dash-pendente').innerText = formatBRL(pend);
+            document.getElementById('dash-saldo').innerText = formatBRL(ent - sai);
 
-            const perc = receitas > 0 ? Math.min((saldo / receitas) * 100, 100) : 0;
-            const bar = document.getElementById('stat-progress-bar');
-            bar.style.width = `${Math.max(perc, 0)}%`;
-            bar.className = `h-2 transition-all ${saldo >= 0 ? 'bg-blue-500' : 'bg-rose-500'}`;
-
-            const catContainer = document.getElementById('category-stats');
-            catContainer.innerHTML = '';
-            ['fixa', 'variável', 'extra'].forEach(cat => {
-                const val = data.filter(c => c.tipo !== 'receita' && c.categoria === cat).reduce((a, b) => a + b.valor, 0);
-                if(val === 0 && cat === 'extra') return;
-                const p = despesas > 0 ? (val / despesas) * 100 : 0;
-                catContainer.innerHTML += `<div><div class="flex justify-between text-xs mb-1"><span class="capitalize text-slate-500">${cat}</span><span class="font-bold">${formatMoney(val)}</span></div><div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div class="h-2 ${cat === 'fixa' ? 'bg-indigo-500' : 'bg-orange-400'}" style="width: ${p}%"></div></div></div>`;
+            const catDiv = document.getElementById('cat-distribution');
+            catDiv.innerHTML = '';
+            ['fixa', 'variável', 'lazer', 'extra'].forEach(c => {
+                const total = data.filter(r => r.categoria === c).reduce((a, b) => a + b.valor, 0);
+                if(total > 0) {
+                    const perc = (total / (sai || 1)) * 100;
+                    catDiv.innerHTML += `<div><p class='text-xs uppercase font-bold text-slate-400'>${c}</p><p class='font-bold'>${formatBRL(total)}</p><div class='h-1.5 bg-slate-100 rounded-full mt-1'><div class='h-full bg-blue-500 rounded-full' style='width:${perc}%'></div></div></div>`;
+                }
             });
 
-            const upContainer = document.getElementById('upcoming-list');
-            const pendingList = data.filter(c => c.tipo !== 'receita' && c.status === 'pendente').slice(0, 4);
-            upContainer.innerHTML = pendingList.length ? '' : '<p class="text-slate-400 italic py-4 text-center">Tudo em dia!</p>';
-            pendingList.forEach(c => {
-                const late = new Date(c.vencimento) < new Date().setHours(0,0,0,0);
-                upContainer.innerHTML += `<div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100"><div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full ${late ? 'bg-red-500 animate-pulse' : 'bg-amber-400'}"></div><div><p class="font-semibold text-slate-800 text-xs">${c.nome}</p><p class="text-[9px] text-slate-500">${new Date(c.vencimento).toLocaleDateString('pt-BR')}</p></div></div><span class="font-bold text-rose-600 text-xs">-${formatMoney(c.valor)}</span></div>`;
+            const upDiv = document.getElementById('upcoming-list');
+            const pending = data.filter(r => r.tipo === 'despesa' && !r.pago).slice(0, 4);
+            upDiv.innerHTML = pending.length ? '' : '<p class="text-slate-400 text-sm">Nada pendente.</p>';
+            pending.forEach(r => {
+                upDiv.innerHTML += `<div class='flex justify-between bg-slate-50 p-3 rounded-xl border border-slate-100'><p class='text-xs font-bold'>${r.nome}</p><span class='text-xs text-rose-500 font-bold'>-${formatBRL(r.valor)}</span></div>`;
             });
         }
 
         function renderList(data) {
-            const body = document.getElementById('contas-table-body');
-            body.innerHTML = '';
-            data.forEach(c => {
-                const isRec = c.tipo === 'receita';
-                const row = document.createElement('tr');
-                row.className = 'group hover:bg-slate-50';
-                row.innerHTML = `<td class="px-6 py-4">${isRec ? '<span class="text-emerald-500"><i class="fas fa-plus-circle"></i></span>' : `<button onclick="handleToggleStatus('${c.id}')" class="p-2 rounded-full ${c.status === 'paga' ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}"><i class="fas ${c.status === 'paga' ? 'fa-check-circle' : 'fa-clock'}"></i></button>`}</td><td class="px-6 py-4"><div class="font-bold text-slate-800">${c.nome}</div><div class="text-[9px] text-slate-400 uppercase font-bold">${isRec ? 'Receita' : c.categoria}</div></td><td class="px-6 py-4 text-slate-500 text-xs">${new Date(c.vencimento).toLocaleDateString('pt-BR')}</td><td class="px-6 py-4 font-bold font-mono ${isRec ? 'text-emerald-600' : 'text-rose-600'}">${isRec ? '+' : '-'}${formatMoney(c.valor)}</td><td class="px-6 py-4"><span class="px-2 py-1 bg-slate-100 rounded text-[9px] font-bold text-slate-500">${c.formaPagamento}</span></td><td class="px-6 py-4 text-right"><div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="handleEdit('${c.id}')" class="p-1 text-slate-400 hover:text-blue-600"><i class="fas fa-edit"></i></button><button onclick="handleDelete('${c.id}')" class="p-1 text-slate-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button></div></td>`;
-                body.appendChild(row);
+            const body = document.getElementById('table-body');
+            body.innerHTML = data.length ? '' : '<tr><td colspan="5" class="p-10 text-center text-slate-400">Sem dados este mês.</td></tr>';
+            data.forEach(r => {
+                body.innerHTML += `
+                <tr class="border-b border-slate-50">
+                    <td class="px-6 py-4"><button onclick="togglePago('${r.id}')" class="${r.pago ? 'text-emerald-500' : 'text-slate-300'}"><i class="fas fa-check-circle text-lg"></i></button></td>
+                    <td class="px-6 py-4 font-bold text-slate-800">${r.nome}</td>
+                    <td class="px-6 py-4 text-xs">${new Date(r.data).toLocaleDateString('pt-BR')}</td>
+                    <td class="px-6 py-4 font-bold ${r.tipo === 'receita' ? 'text-emerald-500' : 'text-rose-500'}">${formatBRL(r.valor)}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="editReg('${r.id}')" class="text-slate-400 hover:text-blue-500 mx-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteReg('${r.id}')" class="text-slate-400 hover:text-rose-500"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
             });
         }
 
-        // Juros Logic
-        window.calculateJuros = () => {
-            const P = parseFloat(document.getElementById('calc-capital').value) || 0;
-            let i = parseFloat(document.getElementById('calc-taxa').value) || 0;
-            let n = parseFloat(document.getElementById('calc-tempo').value) || 0;
-            
-            const taxaTipo = document.getElementById('calc-taxa-tipo').value;
-            const tempoTipo = document.getElementById('calc-tempo-tipo').value;
-
-            // Normalização: tudo para mensal
-            if(taxaTipo === 'ano') i = i / 12;
-            if(tempoTipo === 'anos') n = n * 12;
-
-            i = i / 100; // Porcentagem para decimal
-
-            let montante = 0;
-            if(state.calcRegime === 'simples') {
-                montante = P * (1 + (i * n));
-            } else {
-                montante = P * Math.pow((1 + i), n);
-            }
-
-            const totalJuros = montante - P;
-            document.getElementById('calc-res-juros').innerText = formatMoney(totalJuros);
-            document.getElementById('calc-res-montante').innerText = formatMoney(montante);
-        };
-
-        window.setCalcRegime = (r) => {
-            state.calcRegime = r;
-            const isComp = r === 'composto';
-            document.getElementById('btn-regime-composto').className = `flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isComp ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'}`;
-            document.getElementById('btn-regime-simples').className = `flex-1 py-2 text-sm font-bold rounded-lg transition-all ${!isComp ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'}`;
-            calculateJuros();
-        };
-
-        // Listeners for Calculator
-        ['calc-capital', 'calc-taxa', 'calc-tempo', 'calc-taxa-tipo', 'calc-tempo-tipo'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calculateJuros);
-        });
+        function doCalc() {
+            const P = parseFloat(document.getElementById('calc-p').value) || 0;
+            const i = (parseFloat(document.getElementById('calc-i').value) || 0) / 100;
+            const n = parseFloat(document.getElementById('calc-n').value) || 0;
+            document.getElementById('res-total').innerText = formatBRL(P * Math.pow((1 + i), n));
+        }
 
         window.changeView = (v) => {
-            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`view-${v}`).classList.remove('hidden');
-            const isCalc = v === 'calculator';
-            document.getElementById('period-selector').style.display = isCalc ? 'none' : 'flex';
-            document.getElementById('view-title').innerText = v === 'dashboard' ? 'Dashboard' : v === 'list' ? 'Extrato Mensal' : v === 'calculator' ? 'Simulação de Juros' : 'Lançamento';
-            document.getElementById('view-subtitle').innerText = isCalc ? 'Projete seus rendimentos ou dívidas' : 'Controle de entradas e saídas';
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                const isActive = btn.dataset.view === v;
-                btn.classList.toggle('bg-blue-50', isActive);
-                btn.classList.toggle('text-blue-600', isActive);
-            });
+            document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${v}`).classList.add('active');
+            document.getElementById('view-title').innerText = v.charAt(0).toUpperCase() + v.slice(1);
+            document.getElementById('calendar-controls').style.display = (v === 'calculator' || v === 'form') ? 'none' : 'flex';
         };
 
-        // Finance Handlers
         window.setFormType = (t) => {
-            document.getElementById('form-tipo').value = t;
-            const isRec = t === 'receita';
-            document.getElementById('btn-type-despesa').className = `flex-1 py-2 text-sm font-bold rounded-lg ${!isRec ? 'bg-white shadow-sm text-rose-600' : 'text-slate-500'}`;
-            document.getElementById('btn-type-receita').className = `flex-1 py-2 text-sm font-bold rounded-lg ${isRec ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500'}`;
-            document.getElementById('wrapper-categoria').style.display = isRec ? 'none' : 'block';
+            document.getElementById('form-type-val').value = t;
+            document.getElementById('ft-des').className = `flex-1 py-2 font-bold rounded-lg ${t === 'despesa' ? 'bg-white shadow-sm text-rose-600' : 'text-slate-400'}`;
+            document.getElementById('ft-rec').className = `flex-1 py-2 font-bold rounded-lg ${t === 'receita' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400'}`;
         };
 
-        window.handleToggleStatus = async (id) => {
-            const c = state.contas.find(x => x.id === id);
-            if(c.tipo === 'receita') return;
-            await updateDoc(doc(db, `artifacts/${appId}/public/data/contas`, id), { status: c.status === 'paga' ? 'pendente' : 'paga' });
+        window.changeMonth = (d) => {
+            state.month += d;
+            if(state.month > 11) { state.month = 0; state.year++; }
+            if(state.month < 0) { state.month = 11; state.year--; }
+            renderAll();
         };
 
-        window.handleDelete = async (id) => { if(confirm("Excluir registro?")) await deleteDoc(doc(db, `artifacts/${appId}/public/data/contas`, id)); };
-        
-        window.handleEdit = (id) => {
-            const c = state.contas.find(x => x.id === id);
-            document.getElementById('edit-id').value = c.id;
-            document.getElementById('form-nome').value = c.nome;
-            document.getElementById('form-valor').value = c.valor;
-            document.getElementById('form-vencimento').value = c.vencimento;
-            document.getElementById('form-categoria').value = c.categoria || 'fixa';
-            document.getElementById('form-meio').value = c.formaPagamento;
-            setFormType(c.tipo || 'despesa');
-            window.changeView('form');
+        window.openForm = () => {
+            document.getElementById('finance-form').reset();
+            document.getElementById('edit-id').value = '';
+            changeView('form');
         };
 
-        document.getElementById('finance-form').onsubmit = async (e) => {
+        window.togglePago = (id) => {
+            const r = state.registros.find(x => x.id == id);
+            if(r) r.pago = !r.pago;
+            saveToLocal();
+        };
+
+        window.deleteReg = (id) => {
+            if(confirm("Apagar registo?")) {
+                state.registros = state.registros.filter(r => r.id != id);
+                saveToLocal();
+            }
+        };
+
+        window.editReg = (id) => {
+            const r = state.registros.find(x => x.id == id);
+            document.getElementById('edit-id').value = r.id;
+            document.getElementById('form-name').value = r.nome;
+            document.getElementById('form-value').value = r.valor;
+            document.getElementById('form-date').value = r.data;
+            setFormType(r.tipo);
+            changeView('form');
+        };
+
+        document.getElementById('finance-form').onsubmit = (e) => {
             e.preventDefault();
             const id = document.getElementById('edit-id').value;
-            const t = document.getElementById('form-tipo').value;
             const data = {
-                tipo: t, nome: document.getElementById('form-nome').value, valor: Number(document.getElementById('form-valor').value),
-                vencimento: document.getElementById('form-vencimento').value, categoria: t === 'receita' ? null : document.getElementById('form-categoria').value,
-                formaPagamento: document.getElementById('form-meio').value, observacoes: document.getElementById('form-obs').value,
-                status: t === 'receita' ? 'paga' : (id ? state.contas.find(x => x.id === id).status : 'pendente'),
-                mesRef: state.currentMonth, anoRef: state.currentYear, userId: state.user.uid
+                id: id || Date.now(),
+                nome: document.getElementById('form-name').value,
+                valor: parseFloat(document.getElementById('form-value').value),
+                data: document.getElementById('form-date').value,
+                tipo: document.getElementById('form-type-val').value,
+                categoria: document.getElementById('form-cat').value,
+                meio: document.getElementById('form-method').value,
+                pago: id ? state.registros.find(x => x.id == id).pago : false
             };
-            if(id) await updateDoc(doc(db, `artifacts/${appId}/public/data/contas`, id), data);
-            else await addDoc(collection(db, `artifacts/${appId}/public/data/contas`), data);
-            window.changeView('list');
+
+            if(id) {
+                const idx = state.registros.findIndex(x => x.id == id);
+                state.registros[idx] = data;
+            } else {
+                state.registros.push(data);
+            }
+            saveToLocal();
+            changeView('dashboard');
         };
 
-        window.openForm = () => { document.getElementById('edit-id').value = ''; document.getElementById('finance-form').reset(); setFormType('despesa'); window.changeView('form'); };
-        window.changeMonth = (d) => { state.currentMonth += d; if(state.currentMonth>11){state.currentMonth=0;state.currentYear++;}else if(state.currentMonth<0){state.currentMonth=11;state.currentYear--;} render(); };
-        window.exportCSV = () => { /* Same as before */ };
-
-        handleAuth();
-        window.changeView('dashboard');
+        ['calc-p', 'calc-i', 'calc-n'].forEach(id => document.getElementById(id).addEventListener('input', doCalc));
+        
+        // Iniciar
+        renderAll();
     </script>
 </body>
 </html>
